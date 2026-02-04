@@ -15,56 +15,56 @@ import java.util.concurrent.atomic.AtomicLong;
 @Repository
 public class MockPetRepositoryImpl implements PetRepository {
 
-    private final Map<Long, Pet> store;
-    private final AtomicLong seq;
+  private final Map<Long, Pet> store;
+  private final AtomicLong seq;
 
-    @Autowired
-    public MockPetRepositoryImpl() {
-        this(
-                new ConcurrentHashMap<>(),
-                new AtomicLong(1)
-        );
+  @Autowired
+  public MockPetRepositoryImpl() {
+    this(
+      new ConcurrentHashMap<>(),
+      new AtomicLong(1)
+    );
+  }
+
+  MockPetRepositoryImpl(Map<Long, Pet> store, AtomicLong seq) {
+    this.store = store;
+    this.seq = seq;
+  }
+
+  @Override
+  public Pet save(Pet pet) {
+
+    if (pet.id() == null) {
+      long id = seq.getAndIncrement();
+      pet = pet.withId(id);
     }
 
-    MockPetRepositoryImpl(Map<Long, Pet> store, AtomicLong seq) {
-        this.store = store;
-        this.seq = seq;
-    }
+    store.put(pet.id(), pet);
+    return pet;
+  }
 
-    @Override
-    public Pet save(Pet pet) {
+  @Override
+  public Optional<Pet> findById(long id) {
+    return Optional.ofNullable(store.get(id));
+  }
 
-        if (pet.id() == null) {
-            long id = seq.getAndIncrement();
-            pet = pet.withId(id);
-        }
+  @Override
+  public List<Pet> findAll() {
 
-        store.put(pet.id(), pet);
-        return pet;
-    }
+    List<Pet> all = new ArrayList<>(store.values());
+    all.sort(Comparator.comparing(Pet::id));//Return always the same order
+    return all;
+  }
 
-    @Override
-    public Optional<Pet> findById(long id) {
-        return Optional.ofNullable(store.get(id));
-    }
+  @Override
+  public boolean existsById(long id) {
+    return store.containsKey(id);
+  }
 
-    @Override
-    public List<Pet> findAll() {
-
-        List<Pet> all = new ArrayList<>(store.values());
-        all.sort(Comparator.comparing(Pet::id));//Return always the same order
-        return all;
-    }
-
-    @Override
-    public boolean existsById(long id) {
-        return store.containsKey(id);
-    }
-
-    @Override
-    public boolean deleteById(long id) {
-        Pet petRemoved = store.remove(id);
-        return petRemoved != null;
-    }
+  @Override
+  public boolean deleteById(long id) {
+    Pet petRemoved = store.remove(id);
+    return petRemoved != null;
+  }
 }
 

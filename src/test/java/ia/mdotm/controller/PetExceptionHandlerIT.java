@@ -21,62 +21,62 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Import(PetExceptionHandlerIT.TestExceptionController.class)
 class PetExceptionHandlerIT {
 
-    @Autowired
-    private MockMvc mockMvc;
+  @Autowired
+  private MockMvc mockMvc;
 
-    @Test
-    void handleNotFound_returnsNotFound() throws Exception {
+  @Test
+  void handleNotFound_returnsNotFound() throws Exception {
 
-        mockMvc.perform(put("/pets/{id}", 999L)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                                {"name":"Max","species":"dog","age":4,"ownerName":"Ethan"}
-                                """))
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.message").value("Pet not found for id = [999]"));
+    mockMvc.perform(put("/pets/{id}", 999L)
+        .contentType(MediaType.APPLICATION_JSON)
+        .content("""
+          {"name":"Max","species":"dog","age":4,"ownerName":"Ethan"}
+          """))
+      .andExpect(status().isNotFound())
+      .andExpect(jsonPath("$.message").value("Pet not found for id = [999]"));
+  }
+
+  @Test
+  void handleValidation_returnsBadRequest() throws Exception {
+
+    mockMvc.perform(post("/pets")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content("""
+          {"name":" ","species":" ","age":-1,"ownerName":"Anna"}
+          """))
+      .andExpect(status().isBadRequest())
+      .andExpect(jsonPath("$.message").value("Validation failed"))
+      .andExpect(jsonPath("$.details.fieldErrors.name").value("must not be blank"))
+      .andExpect(jsonPath("$.details.fieldErrors.species").value("must not be blank"))
+      .andExpect(jsonPath("$.details.fieldErrors.age").value("must be greater than or equal to 0"));
+  }
+
+  @Test
+  void handleBadJson_returnsBadRequest() throws Exception {
+
+    mockMvc.perform(post("/pets")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content("""
+          {"name":"Fido","species":"dog","age":3,"ownerName":"Anna"
+          """))
+      .andExpect(status().isBadRequest())
+      .andExpect(jsonPath("$.message").value("Malformed JSON request"));
+  }
+
+  @Test
+  void handleGeneric_returnsInternalServerError() throws Exception {
+
+    mockMvc.perform(get("/test-error"))
+      .andExpect(status().isInternalServerError())
+      .andExpect(jsonPath("$.message").value("Boom"));
+  }
+
+  @RestController
+  static class TestExceptionController {
+
+    @GetMapping("/test-error")
+    public void throwError() {
+      throw new RuntimeException("Boom");
     }
-
-    @Test
-    void handleValidation_returnsBadRequest() throws Exception {
-
-        mockMvc.perform(post("/pets")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                                {"name":" ","species":" ","age":-1,"ownerName":"Anna"}
-                                """))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("Validation failed"))
-                .andExpect(jsonPath("$.details.fieldErrors.name").value("must not be blank"))
-                .andExpect(jsonPath("$.details.fieldErrors.species").value("must not be blank"))
-                .andExpect(jsonPath("$.details.fieldErrors.age").value("must be greater than or equal to 0"));
-    }
-
-    @Test
-    void handleBadJson_returnsBadRequest() throws Exception {
-
-        mockMvc.perform(post("/pets")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                                {"name":"Fido","species":"dog","age":3,"ownerName":"Anna"
-                                """))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("Malformed JSON request"));
-    }
-
-    @Test
-    void handleGeneric_returnsInternalServerError() throws Exception {
-
-        mockMvc.perform(get("/test-error"))
-                .andExpect(status().isInternalServerError())
-                .andExpect(jsonPath("$.message").value("Boom"));
-    }
-
-    @RestController
-    static class TestExceptionController {
-
-        @GetMapping("/test-error")
-        public void throwError() {
-            throw new RuntimeException("Boom");
-        }
-    }
+  }
 }

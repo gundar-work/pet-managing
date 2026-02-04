@@ -8,13 +8,13 @@ import java.util.Optional;
 
 public interface PetService {
 
-    Pet create(Pet request);
+  Pet create(Pet request);
 
-    Optional<Pet> getById(long id);
+  Optional<Pet> getById(long id);
 
-    List<Pet> list();
+  List<Pet> list();
 
-    Pet update(Pet request);
+  Pet update(Pet request);
 
-    boolean delete(long id);
+  boolean delete(long id);
 }

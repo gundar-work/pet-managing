@@ -20,104 +20,104 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 class PetCrudIT {
 
-    @Autowired
-    private MockMvc mockMvc;
+  @Autowired
+  private MockMvc mockMvc;
 
-    @Test
-    void crud_flow_worksEndToEnd() throws Exception {
-        
-        MvcResult createdResult = mockMvc.perform(post("/pets")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                                {"name":"Fido","species":"dog","age":3,"ownerName":"Anna"}
-                                """))
-                .andExpect(status().isCreated())
-                .andReturn();
+  @Test
+  void crud_flow_worksEndToEnd() throws Exception {
 
-        String location = createdResult.getResponse().getHeader("Location");
-        assertThat(location).isNotBlank();
-        String idPart = location.substring(location.lastIndexOf('/') + 1);
-        long id = Long.parseLong(idPart);
+    MvcResult createdResult = mockMvc.perform(post("/pets")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content("""
+          {"name":"Fido","species":"dog","age":3,"ownerName":"Anna"}
+          """))
+      .andExpect(status().isCreated())
+      .andReturn();
 
-        mockMvc.perform(get("/pets/{id}", id))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(id))
-                .andExpect(jsonPath("$.name").value("Fido"));
+    String location = createdResult.getResponse().getHeader("Location");
+    assertThat(location).isNotBlank();
+    String idPart = location.substring(location.lastIndexOf('/') + 1);
+    long id = Long.parseLong(idPart);
 
-        mockMvc.perform(put("/pets/{id}", id)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                                {"name":"Rex","species":"dog","age":4,"ownerName":"Anna"}
-                                """))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(id))
-                .andExpect(jsonPath("$.name").value("Rex"));
+    mockMvc.perform(get("/pets/{id}", id))
+      .andExpect(status().isOk())
+      .andExpect(jsonPath("$.id").value(id))
+      .andExpect(jsonPath("$.name").value("Fido"));
 
-        mockMvc.perform(get("/pets/{id}", id))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value("Rex"))
-                .andExpect(jsonPath("$.age").value(4));
+    mockMvc.perform(put("/pets/{id}", id)
+        .contentType(MediaType.APPLICATION_JSON)
+        .content("""
+          {"name":"Rex","species":"dog","age":4,"ownerName":"Anna"}
+          """))
+      .andExpect(status().isOk())
+      .andExpect(jsonPath("$.id").value(id))
+      .andExpect(jsonPath("$.name").value("Rex"));
 
-        mockMvc.perform(delete("/pets/{id}", id))
-                .andExpect(status().isNoContent());
+    mockMvc.perform(get("/pets/{id}", id))
+      .andExpect(status().isOk())
+      .andExpect(jsonPath("$.name").value("Rex"))
+      .andExpect(jsonPath("$.age").value(4));
 
-        mockMvc.perform(get("/pets/{id}", id))
-                .andExpect(status().isNotFound());
-    }
+    mockMvc.perform(delete("/pets/{id}", id))
+      .andExpect(status().isNoContent());
 
-    @Test
-    void update_returnsNotFoundWhenPetDoesNotExist() throws Exception {
+    mockMvc.perform(get("/pets/{id}", id))
+      .andExpect(status().isNotFound());
+  }
 
-        mockMvc.perform(put("/pets/{id}", 999L)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                                {"name":"Max","species":"dog","age":4,"ownerName":"Ethan"}
-                                """))
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.message").value("Pet not found for id = [999]"));
-    }
+  @Test
+  void update_returnsNotFoundWhenPetDoesNotExist() throws Exception {
 
-    @Test
-    void list_returnsPetsSortedById() throws Exception {
+    mockMvc.perform(put("/pets/{id}", 999L)
+        .contentType(MediaType.APPLICATION_JSON)
+        .content("""
+          {"name":"Max","species":"dog","age":4,"ownerName":"Ethan"}
+          """))
+      .andExpect(status().isNotFound())
+      .andExpect(jsonPath("$.message").value("Pet not found for id = [999]"));
+  }
 
-        MvcResult first = mockMvc.perform(post("/pets")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                                {"name":"Bella","species":"dog","age":2,"ownerName":"Olivia"}
-                                """))
-                .andExpect(status().isCreated())
-                .andReturn();
+  @Test
+  void list_returnsPetsSortedById() throws Exception {
 
-        MvcResult second = mockMvc.perform(post("/pets")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                                {"name":"Milo","species":"cat","age":1,"ownerName":"Sophie"}
-                                """))
-                .andExpect(status().isCreated())
-                .andReturn();
+    MvcResult first = mockMvc.perform(post("/pets")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content("""
+          {"name":"Bella","species":"dog","age":2,"ownerName":"Olivia"}
+          """))
+      .andExpect(status().isCreated())
+      .andReturn();
 
-        long firstId = Long.parseLong(first.getResponse().getHeader("Location").substring("/pets/".length()));
-        long secondId = Long.parseLong(second.getResponse().getHeader("Location").substring("/pets/".length()));
+    MvcResult second = mockMvc.perform(post("/pets")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content("""
+          {"name":"Milo","species":"cat","age":1,"ownerName":"Sophie"}
+          """))
+      .andExpect(status().isCreated())
+      .andReturn();
 
-        mockMvc.perform(get("/pets"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id").value(firstId))
-                .andExpect(jsonPath("$[1].id").value(secondId));
-    }
+    long firstId = Long.parseLong(first.getResponse().getHeader("Location").substring("/pets/".length()));
+    long secondId = Long.parseLong(second.getResponse().getHeader("Location").substring("/pets/".length()));
 
-    @Test
-    void list_returnsEmptyWhenNoPets() throws Exception {
+    mockMvc.perform(get("/pets"))
+      .andExpect(status().isOk())
+      .andExpect(jsonPath("$[0].id").value(firstId))
+      .andExpect(jsonPath("$[1].id").value(secondId));
+  }
 
-        mockMvc.perform(get("/pets"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isEmpty());
-    }
+  @Test
+  void list_returnsEmptyWhenNoPets() throws Exception {
 
-    @Test
-    void delete_returnsNotFoundWhenPetDoesNotExist() throws Exception {
+    mockMvc.perform(get("/pets"))
+      .andExpect(status().isOk())
+      .andExpect(jsonPath("$").isEmpty());
+  }
 
-        mockMvc.perform(delete("/pets/{id}", 777L))
-                .andExpect(status().isNotFound());
-    }
+  @Test
+  void delete_returnsNotFoundWhenPetDoesNotExist() throws Exception {
+
+    mockMvc.perform(delete("/pets/{id}", 777L))
+      .andExpect(status().isNotFound());
+  }
 
 }

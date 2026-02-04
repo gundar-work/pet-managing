@@ -16,46 +16,46 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 class PetValidationIT {
 
-    @Autowired
-    private MockMvc mockMvc;
+  @Autowired
+  private MockMvc mockMvc;
 
-    @Test
-    void create_returnsBadRequestWhenValidationFails() throws Exception {
+  @Test
+  void create_returnsBadRequestWhenValidationFails() throws Exception {
 
-        mockMvc.perform(post("/pets")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                                {"name":" ","species":" ","age":-1,"ownerName":"Anna"}
-                                """))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.details.fieldErrors.name").value("must not be blank"))
-                .andExpect(jsonPath("$.details.fieldErrors.species").value("must not be blank"))
-                .andExpect(jsonPath("$.details.fieldErrors.age").value("must be greater than or equal to 0"));
-    }
+    mockMvc.perform(post("/pets")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content("""
+          {"name":" ","species":" ","age":-1,"ownerName":"Anna"}
+          """))
+      .andExpect(status().isBadRequest())
+      .andExpect(jsonPath("$.details.fieldErrors.name").value("must not be blank"))
+      .andExpect(jsonPath("$.details.fieldErrors.species").value("must not be blank"))
+      .andExpect(jsonPath("$.details.fieldErrors.age").value("must be greater than or equal to 0"));
+  }
 
-    @Test
-    void update_returnsBadRequestWhenValidationFails() throws Exception {
+  @Test
+  void update_returnsBadRequestWhenValidationFails() throws Exception {
 
-        mockMvc.perform(put("/pets/{id}", 1L)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                                {"name":" ","species":" ","age":-5,"ownerName":"Anna"}
-                                """))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.details.fieldErrors.name").value("must not be blank"))
-                .andExpect(jsonPath("$.details.fieldErrors.species").value("must not be blank"))
-                .andExpect(jsonPath("$.details.fieldErrors.age").value("must be greater than or equal to 0"));
-    }
+    mockMvc.perform(put("/pets/{id}", 1L)
+        .contentType(MediaType.APPLICATION_JSON)
+        .content("""
+          {"name":" ","species":" ","age":-5,"ownerName":"Anna"}
+          """))
+      .andExpect(status().isBadRequest())
+      .andExpect(jsonPath("$.details.fieldErrors.name").value("must not be blank"))
+      .andExpect(jsonPath("$.details.fieldErrors.species").value("must not be blank"))
+      .andExpect(jsonPath("$.details.fieldErrors.age").value("must be greater than or equal to 0"));
+  }
 
-    @Test
-    void create_returnsBadRequestWhenJsonIsMalformed() throws Exception {
+  @Test
+  void create_returnsBadRequestWhenJsonIsMalformed() throws Exception {
 
-        mockMvc.perform(post("/pets")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                                {"name":"Fido","species":"dog","age":3,"ownerName":"Anna"
-                                """))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("Malformed JSON request"));
-    }
+    mockMvc.perform(post("/pets")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content("""
+          {"name":"Fido","species":"dog","age":3,"ownerName":"Anna"
+          """))
+      .andExpect(status().isBadRequest())
+      .andExpect(jsonPath("$.message").value("Malformed JSON request"));
+  }
 }

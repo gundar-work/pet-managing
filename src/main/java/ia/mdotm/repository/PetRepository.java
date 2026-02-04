@@ -7,14 +7,14 @@ import java.util.Optional;
 
 public interface PetRepository {
 
-    Pet save(Pet pet);
+  Pet save(Pet pet);
 
-    Optional<Pet> findById(long id);
+  Optional<Pet> findById(long id);
 
-    List<Pet> findAll();
+  List<Pet> findAll();
 
-    boolean existsById(long id);
+  boolean existsById(long id);
 
-    boolean deleteById(long id);
+  boolean deleteById(long id);
 }
 

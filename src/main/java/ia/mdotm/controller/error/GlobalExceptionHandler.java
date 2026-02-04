@@ -16,61 +16,61 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(PetNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleNotFound(PetNotFoundException ex, HttpServletRequest request) {
+  @ExceptionHandler(PetNotFoundException.class)
+  public ResponseEntity<ErrorResponse> handleNotFound(PetNotFoundException ex, HttpServletRequest request) {
 
-        ErrorResponse body = ErrorResponse.of(
-                HttpStatus.NOT_FOUND.value(),
-                HttpStatus.NOT_FOUND.getReasonPhrase(),
-                ex.getMessage(),
-                request.getRequestURI()
-        );
+    ErrorResponse body = ErrorResponse.of(
+      HttpStatus.NOT_FOUND.value(),
+      HttpStatus.NOT_FOUND.getReasonPhrase(),
+      ex.getMessage(),
+      request.getRequestURI()
+    );
 
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
+  }
+
+  @ExceptionHandler(MethodArgumentNotValidException.class)
+  public ResponseEntity<ErrorResponse> handleValidation(MethodArgumentNotValidException ex, HttpServletRequest request) {
+
+    Map<String, String> fieldErrors = new LinkedHashMap<>();
+    for (FieldError fe : ex.getBindingResult().getFieldErrors()) {
+      fieldErrors.putIfAbsent(fe.getField(), fe.getDefaultMessage());
     }
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponse> handleValidation(MethodArgumentNotValidException ex, HttpServletRequest request) {
+    ErrorResponse body = ErrorResponse.of(
+      HttpStatus.BAD_REQUEST.value(),
+      HttpStatus.BAD_REQUEST.getReasonPhrase(),
+      "Validation failed",
+      request.getRequestURI(),
+      Map.of("fieldErrors", fieldErrors)
+    );
 
-        Map<String, String> fieldErrors = new LinkedHashMap<>();
-        for (FieldError fe : ex.getBindingResult().getFieldErrors()) {
-            fieldErrors.putIfAbsent(fe.getField(), fe.getDefaultMessage());
-        }
+    return ResponseEntity.badRequest().body(body);
+  }
 
-        ErrorResponse body = ErrorResponse.of(
-                HttpStatus.BAD_REQUEST.value(),
-                HttpStatus.BAD_REQUEST.getReasonPhrase(),
-                "Validation failed",
-                request.getRequestURI(),
-                Map.of("fieldErrors", fieldErrors)
-        );
+  @ExceptionHandler(HttpMessageNotReadableException.class)
+  public ResponseEntity<ErrorResponse> handleBadJson(HttpMessageNotReadableException ex, HttpServletRequest request) {
 
-        return ResponseEntity.badRequest().body(body);
-    }
+    ErrorResponse body = ErrorResponse.of(
+      HttpStatus.BAD_REQUEST.value(),
+      HttpStatus.BAD_REQUEST.getReasonPhrase(),
+      "Malformed JSON request",
+      request.getRequestURI()
+    );
+    return ResponseEntity.badRequest().body(body);
+  }
 
-    @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<ErrorResponse> handleBadJson(HttpMessageNotReadableException ex, HttpServletRequest request) {
+  @ExceptionHandler(Exception.class)
+  public ResponseEntity<ErrorResponse> handleGeneric(Exception ex, HttpServletRequest request) {
 
-        ErrorResponse body = ErrorResponse.of(
-                HttpStatus.BAD_REQUEST.value(),
-                HttpStatus.BAD_REQUEST.getReasonPhrase(),
-                "Malformed JSON request",
-                request.getRequestURI()
-        );
-        return ResponseEntity.badRequest().body(body);
-    }
+    ErrorResponse body = ErrorResponse.of(
+      HttpStatus.INTERNAL_SERVER_ERROR.value(),
+      HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(),
+      ex.getMessage(),
+      request.getRequestURI()
+    );
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleGeneric(Exception ex, HttpServletRequest request) {
-
-        ErrorResponse body = ErrorResponse.of(
-                HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(),
-                ex.getMessage(),
-                request.getRequestURI()
-        );
-
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
-    }
+    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
+  }
 }
 

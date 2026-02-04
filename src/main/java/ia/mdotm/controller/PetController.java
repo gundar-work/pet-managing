@@ -20,72 +20,72 @@ import java.util.List;
 @RequestMapping("/pets")
 public class PetController {
 
-    private final PetService petService;
-    private final PetMapper mapper;
+  private final PetService petService;
+  private final PetMapper mapper;
 
-    public PetController(PetService petService, PetMapper mapper) {
-        this.petService = petService;
-        this.mapper = mapper;
+  public PetController(PetService petService, PetMapper mapper) {
+    this.petService = petService;
+    this.mapper = mapper;
+  }
+
+  @PostMapping
+  public ResponseEntity<PetResponseDto> create(@Valid @RequestBody PetRequestDto request) {
+
+    Pet newPet = mapper.toDomain(request);
+    Pet created = petService.create(newPet);
+
+    PetResponseDto response = mapper.toResponse(created);
+    URI location = URI.create("/pets/" + created.id());
+
+    return ResponseEntity.created(location).body(response);
+  }
+
+  @GetMapping("/{id}")
+  public ResponseEntity<PetResponseDto> getById(@PathVariable("id") long id) {
+
+    PetResponseDto petDto = petService.getById(id)
+      .map(mapper::toResponse)
+      .orElse(null);
+
+    if (petDto == null) {
+      return ResponseEntity.notFound().build();
+    } else {
+      return ResponseEntity.ok(petDto);
     }
 
-    @PostMapping
-    public ResponseEntity<PetResponseDto> create(@Valid @RequestBody PetRequestDto request) {
+  }
 
-        Pet newPet = mapper.toDomain(request);
-        Pet created = petService.create(newPet);
+  @GetMapping
+  public ResponseEntity<List<PetResponseDto>> list() {
 
-        PetResponseDto response = mapper.toResponse(created);
-        URI location = URI.create("/pets/" + created.id());
+    List<PetResponseDto> petsResponse = petService.list().stream()
+      .map(mapper::toResponse)
+      .toList();
 
-        return ResponseEntity.created(location).body(response);
+    return ResponseEntity.ok(petsResponse);
+  }
+
+  @PutMapping("/{id}")
+  public ResponseEntity<PetResponseDto> update(@PathVariable("id") long id, @Valid @RequestBody PetRequestDto request) {
+
+    Pet updatedPet = mapper.toDomain(id, request);
+
+    Pet petCreated = petService.update(updatedPet);
+    PetResponseDto petResponse = mapper.toResponse(petCreated);
+
+    return ResponseEntity.ok(petResponse);
+  }
+
+  @DeleteMapping("/{id}")
+  public ResponseEntity<Void> delete(@PathVariable("id") long id) {
+
+    boolean deleted = petService.delete(id);
+
+    if (deleted) {
+      return ResponseEntity.noContent().build();
+    } else {
+      return ResponseEntity.notFound().build();
     }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<PetResponseDto> getById(@PathVariable("id") long id) {
-
-        PetResponseDto petDto = petService.getById(id)
-                .map(mapper::toResponse)
-                .orElse(null);
-
-        if (petDto == null) {
-            return ResponseEntity.notFound().build();
-        } else {
-            return ResponseEntity.ok(petDto);
-        }
-
-    }
-
-    @GetMapping
-    public ResponseEntity<List<PetResponseDto>> list() {
-
-        List<PetResponseDto> petsResponse = petService.list().stream()
-                .map(mapper::toResponse)
-                .toList();
-
-        return ResponseEntity.ok(petsResponse);
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<PetResponseDto> update(@PathVariable("id") long id, @Valid @RequestBody PetRequestDto request) {
-
-        Pet updatedPet = mapper.toDomain(id, request);
-
-        Pet petCreated = petService.update(updatedPet);
-        PetResponseDto petResponse = mapper.toResponse(petCreated);
-
-        return ResponseEntity.ok(petResponse);
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable("id") long id) {
-
-        boolean deleted = petService.delete(id);
-
-        if (deleted) {
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
+  }
 }
 
