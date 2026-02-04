@@ -1,6 +1,7 @@
 package ia.mdotm.repository;
 
 import ia.mdotm.service.Pet;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -17,6 +18,7 @@ public class MockPetRepositoryImpl implements PetRepository {
     private final Map<Long, Pet> store;
     private final AtomicLong seq;
 
+    @Autowired
     public MockPetRepositoryImpl() {
         this(
                 new ConcurrentHashMap<>(),
@@ -31,8 +33,6 @@ public class MockPetRepositoryImpl implements PetRepository {
 
     @Override
     public Pet save(Pet pet) {
-
-        if (pet == null) throw new IllegalArgumentException("pet must not be null");
 
         if (pet.id() == null) {
             long id = seq.incrementAndGet();
