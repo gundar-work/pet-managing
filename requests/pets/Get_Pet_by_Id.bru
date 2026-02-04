@@ -5,5 +5,11 @@ meta {
 }
 
 get {
-  url: {{baseUrl}}/pets/{{petId}}
+  url: {{baseUrl}}/pets/:id
+  body: none
+  auth: none
+}
+
+params:path {
+  id: 2
 }

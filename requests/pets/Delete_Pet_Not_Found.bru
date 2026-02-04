@@ -5,5 +5,11 @@ meta {
 }
 
 delete {
-  url: {{baseUrl}}/pets/{{missingPetId}}
+  url: {{baseUrl}}/pets/:missingPetId
+  body: none
+  auth: none
+}
+
+params:path {
+  missingPetId: 999
 }

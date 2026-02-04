@@ -6,6 +6,8 @@ meta {
 
 post {
   url: {{baseUrl}}/pets
+  body: json
+  auth: none
 }
 
 headers {
@@ -13,8 +15,10 @@ headers {
 }
 
 body:json {
-  "name": " ",
-  "species": " ",
-  "age": -1,
-  "ownerName": "Anna"
+  {
+    "name": " ",
+    "species": " ",
+    "age": -1,
+    "ownerName": "Anna"
+  }
 }

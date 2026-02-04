@@ -5,7 +5,13 @@ meta {
 }
 
 put {
-  url: {{baseUrl}}/pets/{{missingPetId}}
+  url: {{baseUrl}}/pets/:missingPetId
+  body: json
+  auth: none
+}
+
+params:path {
+  missingPetId: 999
 }
 
 headers {
@@ -13,8 +19,10 @@ headers {
 }
 
 body:json {
-  "name": "Max",
-  "species": "dog",
-  "age": 4,
-  "ownerName": "Ethan"
+  {
+    "name": "Max",
+    "species": "dog",
+    "age": 4,
+    "ownerName": "Ethan"
+  }
 }
