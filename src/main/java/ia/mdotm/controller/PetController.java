@@ -1,6 +1,6 @@
 package ia.mdotm.controller;
 
-import ia.mdotm.service.Pet;
+import ia.mdotm.model.Pet;
 import ia.mdotm.service.PetService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -29,21 +29,21 @@ public class PetController {
     }
 
     @PostMapping
-    public ResponseEntity<ResponsePetDto> create(@Valid @RequestBody PetRequestDto request) {
+    public ResponseEntity<PetResponseDto> create(@Valid @RequestBody PetRequestDto request) {
 
         Pet newPet = mapper.toDomain(request);
         Pet created = petService.create(newPet);
 
-        ResponsePetDto response = mapper.toResponse(created);
+        PetResponseDto response = mapper.toResponse(created);
         URI location = URI.create("/pets/" + created.id());
 
         return ResponseEntity.created(location).body(response);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ResponsePetDto> getById(@PathVariable Long id) {
+    public ResponseEntity<PetResponseDto> getById(@PathVariable("id") long id) {
 
-        ResponsePetDto petDto = petService.getById(id)
+        PetResponseDto petDto = petService.getById(id)
                 .map(mapper::toResponse)
                 .orElse(null);
 
@@ -56,28 +56,28 @@ public class PetController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ResponsePetDto>> list() {
+    public ResponseEntity<List<PetResponseDto>> list() {
 
-        List<ResponsePetDto> petDtos = petService.list().stream()
+        List<PetResponseDto> petsResponse = petService.list().stream()
                 .map(mapper::toResponse)
                 .toList();
 
-        return ResponseEntity.ok(petDtos);
+        return ResponseEntity.ok(petsResponse);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ResponsePetDto> update(@PathVariable Long id, @Valid @RequestBody PetRequestDto request) {
+    public ResponseEntity<PetResponseDto> update(@PathVariable("id") long id, @Valid @RequestBody PetRequestDto request) {
 
         Pet updatedPet = mapper.toDomain(id, request);
 
         Pet petCreated = petService.update(updatedPet);
-        ResponsePetDto petResponse = mapper.toResponse(petCreated);
+        PetResponseDto petResponse = mapper.toResponse(petCreated);
 
         return ResponseEntity.ok(petResponse);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable("id") long id) {
 
         boolean deleted = petService.delete(id);
 
