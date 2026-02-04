@@ -1,6 +1,6 @@
 package ia.mdotm.repository;
 
-import ia.mdotm.service.Pet;
+import ia.mdotm.model.Pet;
 
 import java.util.List;
 import java.util.Optional;

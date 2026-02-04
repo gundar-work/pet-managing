@@ -1,6 +1,8 @@
 package ia.mdotm.service;
 
 
+import ia.mdotm.model.Pet;
+
 import java.util.List;
 import java.util.Optional;
 

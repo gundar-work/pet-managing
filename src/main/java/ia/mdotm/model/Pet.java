@@ -1,4 +1,4 @@
-package ia.mdotm.service;
+package ia.mdotm.model;
 
 public record Pet(Long id, String name, String species, Integer age, String ownerName) {
     public Pet withId(Long id) {

@@ -1,5 +1,6 @@
 package ia.mdotm.service;
 
+import ia.mdotm.model.Pet;
 import ia.mdotm.repository.PetRepository;
 import org.springframework.stereotype.Service;
 

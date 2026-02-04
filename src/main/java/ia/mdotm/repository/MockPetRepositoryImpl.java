@@ -1,6 +1,6 @@
 package ia.mdotm.repository;
 
-import ia.mdotm.service.Pet;
+import ia.mdotm.model.Pet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
