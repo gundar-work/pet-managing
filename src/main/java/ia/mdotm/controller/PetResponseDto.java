@@ -1,6 +1,6 @@
 package ia.mdotm.controller;
 
-public record ResponsePetDto(
+public record PetResponseDto(
         long id,
         String name,
         String species,
