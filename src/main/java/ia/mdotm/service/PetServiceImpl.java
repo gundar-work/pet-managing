@@ -44,7 +44,7 @@ public class PetServiceImpl implements PetService {
         }
 
         if (!petRepository.existsById(pet.id())) {
-            throw new IllegalArgumentException("Pet with id = [" + pet.id() + "] does not exist");
+            throw new PetNotFoundException(pet.id());
         }
 
         return petRepository.save(pet);
