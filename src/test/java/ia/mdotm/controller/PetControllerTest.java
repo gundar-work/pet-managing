@@ -54,7 +54,7 @@ class PetControllerTest {
           {"name":"Fido","species":"dog","age":3,"ownerName":"Anna"}
           """))
       .andExpect(status().isCreated())
-      .andExpect(header().string("Location", "/pets/5"))
+      .andExpect(header().string("Location", "http://localhost/pets/5"))
       .andExpect(jsonPath("$.id").value(5))
       .andExpect(jsonPath("$.name").value("Fido"));
 

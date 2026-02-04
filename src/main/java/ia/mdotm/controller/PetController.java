@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
@@ -42,8 +43,16 @@ public class PetController {
     PetResponseDto response = mapper.toResponse(created);
     log.info("Pet created with id={}", created.id());
 
-    URI location = URI.create("/pets/" + created.id());
+    URI location = createLocation(created.id());
     return ResponseEntity.created(location).body(response);
+  }
+
+  private URI createLocation(long id) {
+    return ServletUriComponentsBuilder
+      .fromCurrentRequest()
+      .path("/{id}")
+      .buildAndExpand(id)
+      .toUri();
   }
 
   @GetMapping("/{id}")

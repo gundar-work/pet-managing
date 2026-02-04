@@ -96,8 +96,8 @@ class PetCrudIT {
       .andExpect(status().isCreated())
       .andReturn();
 
-    long firstId = Long.parseLong(first.getResponse().getHeader("Location").substring("/pets/".length()));
-    long secondId = Long.parseLong(second.getResponse().getHeader("Location").substring("/pets/".length()));
+    long firstId = Long.parseLong(first.getResponse().getHeader("Location").substring("http://localhost/pets/".length()));
+    long secondId = Long.parseLong(second.getResponse().getHeader("Location").substring("http://localhost/pets/".length()));
 
     mockMvc.perform(get("/pets"))
       .andExpect(status().isOk())
