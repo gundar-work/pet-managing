@@ -1,0 +1,20 @@
+meta {
+  name: Update Pet - Validation Error
+  type: http
+  seq: 7
+}
+
+put {
+  url: {{baseUrl}}/pets/{{petId}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  "name": " ",
+  "species": " ",
+  "age": -5,
+  "ownerName": "Anna"
+}

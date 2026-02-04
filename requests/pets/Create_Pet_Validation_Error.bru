@@ -1,0 +1,20 @@
+meta {
+  name: Create Pet - Validation Error
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{baseUrl}}/pets
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  "name": " ",
+  "species": " ",
+  "age": -1,
+  "ownerName": "Anna"
+}

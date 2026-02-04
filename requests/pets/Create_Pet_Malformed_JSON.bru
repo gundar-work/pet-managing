@@ -1,0 +1,17 @@
+meta {
+  name: Create Pet - Malformed JSON
+  type: http
+  seq: 8
+}
+
+post {
+  url: {{baseUrl}}/pets
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:raw {
+  {"name":"Fido","species":"dog","age":3,"ownerName":"Anna"
+}

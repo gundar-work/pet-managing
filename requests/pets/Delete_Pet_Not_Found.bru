@@ -1,0 +1,9 @@
+meta {
+  name: Delete Pet - Not Found
+  type: http
+  seq: 10
+}
+
+delete {
+  url: {{baseUrl}}/pets/{{missingPetId}}
+}

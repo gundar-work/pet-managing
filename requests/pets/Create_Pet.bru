@@ -1,0 +1,20 @@
+meta {
+  name: Create Pet
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/pets
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  "name": "Fido",
+  "species": "dog",
+  "age": 3,
+  "ownerName": "Anna"
+}
