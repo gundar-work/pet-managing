@@ -105,4 +105,19 @@ class PetCrudIT {
                 .andExpect(jsonPath("$[1].id").value(secondId));
     }
 
+    @Test
+    void list_returnsEmptyWhenNoPets() throws Exception {
+
+        mockMvc.perform(get("/pets"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isEmpty());
+    }
+
+    @Test
+    void delete_returnsNotFoundWhenPetDoesNotExist() throws Exception {
+
+        mockMvc.perform(delete("/pets/{id}", 777L))
+                .andExpect(status().isNotFound());
+    }
+
 }
