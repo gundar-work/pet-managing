@@ -35,7 +35,7 @@ public class MockPetRepositoryImpl implements PetRepository {
     public Pet save(Pet pet) {
 
         if (pet.id() == null) {
-            long id = seq.incrementAndGet();
+            long id = seq.getAndIncrement();
             pet = pet.withId(id);
         }
 

@@ -16,7 +16,7 @@ class MockPetRepositoryImplTest {
     void save_assignsIdWhenNull() {
 
         Map<Long, Pet> store = new ConcurrentHashMap<>();
-        MockPetRepositoryImpl sut = new MockPetRepositoryImpl(store, new AtomicLong(0));
+        MockPetRepositoryImpl sut = new MockPetRepositoryImpl(store, new AtomicLong(1));
 
         Pet created = sut.save(new Pet(null, "Fido", "dog", 3, "Ana"));
 
